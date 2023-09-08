@@ -1,0 +1,30 @@
+name: Generate Index
+
+on: 
+  push:
+    branches:
+      - main # branch name
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Generate index.html
+      run: |
+        rm -f index.html
+        echo "<h1>File Index</h1>" > index.html
+        echo "<ul>" >> index.html 
+        for file in *; do
+          [[ $file == "index.html" ]] && continue
+          echo "<li><a href=\"/$file\">$file</a></li>" >> index.html
+        done
+        echo "</ul>" >> index.html
+    
+    - name: Commit and push index.html
+      run: | 
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add index.html
+        git diff-index --quiet HEAD || (git commit -m "Update index" && git push origin main)
