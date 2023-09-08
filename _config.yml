@@ -1,0 +1,18 @@
+plugins:
+  - jekyll-relative-links
+
+include:
+  - README.md
+  - "*.pdf"
+  - "*.docx"
+  - "*.xlsx"
+  - "*.csv"
+  # Add any other file extensions you want to include
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  # Exclude any files or directories not needed in the generated file index
+
+relative_links: true
