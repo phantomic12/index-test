@@ -13,15 +13,21 @@ jobs:
     
     - name: Generate index.html
       run: |
-        rm -f index.html
         echo "<h1>File Index</h1>" > index.html
-        echo "<ul>" >> index.html 
+        echo "<ul>" >> index.html
+  
+        # Get the repo name
+        repo=$(echo "$GITHUB_REPOSITORY" | awk -F '/' '{print $2}')
+  
         for file in *; do
-          [[ $file == "index.html" ]] && continue
-          echo "<li><a href=\"/$file\">$file</a></li>" >> index.html
+            [[ $file == "index.html" ]] && continue
+        
+            # Prefix with repo name  
+            echo "<li><a href=\"/$repo/$file\">$file</a></li>" >> index.html 
         done
+  
         echo "</ul>" >> index.html
-    
+  
     - name: Commit and push index.html
       run: | 
         git config --local user.email "action@github.com"
