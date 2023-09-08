@@ -16,29 +16,30 @@ jobs:
     
     - name: Generate index.html
       run: |
-        echo "<h1>File Index</h1>" > index.html
-        echo "<ul>" >> index.html
-  
-        repo=$(echo "$GITHUB_REPOSITORY" | awk -F '/' '{print $2}')
-  
-        # Function to generate links for files in a directory
-        function generate_dir_links() {
-            for file in $1/*; do
-            if [ -d "${file}" ]; then
-                # Recursively call for subdirectories 
-                generate_dir_links "${file}"
-            else
-                # Generate link using relative path
-                relpath=$(echo "$file" | sed "s|$1/||")
-                echo "<li><a href=\"/$repo/$relpath\">$relpath</a></li>" >> index.html
-            fi
-            done
-        }
-  
-        # Generate links for root dir
-        generate_dir_links "."
+       function generate_index() {
+         dir=$1
+         echo "<h1>Index of $dir</h1>" > $dir/index.html
+         echo "<ul>" >> $dir/index.html
       
-        echo "</ul>" >> index.html
+         for file in $dir/*; do
+           if [ -d "$file" ]; then
+             # Recursively generate index for subdirectories
+             generate_index "$file"
+             
+             # Link to subdirectory index
+             relpath=$(echo "$file" | sed "s|$dir/||")
+             echo "<li><a href=\"/$relpath\">$relpath/</a></li>" >> $dir/index.html
+           else
+             # Link for files
+             filename=$(basename "$file") 
+             echo "<li><a href=\"/$filename\">$filename</a></li>" >> $dir/index.html
+           fi
+         done
+      
+         echo "</ul>" >> $dir/index.html
+       }
+    
+       generate_index "."
   
     - name: Commit and push index.html
       run: | 
